@@ -12,14 +12,14 @@ void ThermalSim::update() {
     // Thermodynamics
     float heat_generated = rpm * 0.015f;
 
-    heat_shield_integrity -+ 0.02f;
+    heat_shield_integrity -= 0.02f;
     if (heat_shield_integrity < 0.1f) {
         heat_shield_integrity = 0.1f;
     }
 
     float heat_dissipated = 20.0f * heat_shield_integrity;
 
-    exhaust_temp + exhaust_temp + heat_generated - heat_dissipated;
+    exhaust_temp = exhaust_temp + heat_generated - heat_dissipated;
 }
 
 bool ThermalSim::isCritical() const {

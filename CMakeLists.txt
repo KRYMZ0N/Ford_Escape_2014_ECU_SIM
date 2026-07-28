@@ -50,7 +50,8 @@ pico_enable_stdio_usb(Ford_Escape_2014_ECU_SIM 1)
 
 # Add the standard library to the build
 target_link_libraries(Ford_Escape_2014_ECU_SIM
-        pico_stdlib)
+        pico_stdlib
+        hardware_pwm)
 
 # Add the standard include files to the build
 target_include_directories(Ford_Escape_2014_ECU_SIM PRIVATE
