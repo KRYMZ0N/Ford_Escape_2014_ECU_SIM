@@ -1,13 +1,16 @@
 #pragma once
 #include "pico/stdlib.h"
+#include "hardware/pwm.h"
 
 class HardwareIO {
 private:
-    uint ledPin;
+    uint redLedPin;
+    uint greenLedPin;
     uint buzzerPin;
+    uint buzzerSlice;
 
 public:
-    HardwareIO(uint led, uint buzzer);
+    HardwareIO(uint redLed, uint greenLed, uint buzzer);
 
     void init();
     void triggerDTC();

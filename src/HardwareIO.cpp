@@ -1,24 +1,38 @@
 #include "HardwareIO.h"
 
-HardwareIO::HardwareIO(uint led, uint buzzer) : ledPin(led), buzzerPin(buzzer) {}
+HardwareIO::HardwareIO(uint redLed, uint greenLed, uint buzzer) 
+    : redLedPin(redLed), greenLedPin(greenLed), buzzerPin(buzzer) {}
 
 void HardwareIO::init() {
-    gpio_init(ledPin);
-    gpio_set_dir(ledPin, GPIO_OUT);
+    gpio_init(redLedPin);
+    gpio_set_dir(redLedPin, GPIO_OUT);
+    
+    gpio_init(greenLedPin);
+    gpio_set_dir(greenLedPin, GPIO_OUT);
 
-    gpio_init(buzzerPin);
-    gpio_set_dir(buzzerPin, GPIO_OUT);
+    gpio_set_function(buzzerPin, GPIO_FUNC_PWM);
+    buzzerSlice = pwm_gpio_to_slice_num(buzzerPin);
+    
+    pwm_set_clkdiv(buzzerSlice, 125.0f);
+    pwm_set_enabled(buzzerSlice, true);
 }
 
 void HardwareIO::triggerDTC() {
+    gpio_put(redLedPin, 1);
+    gpio_put(greenLedPin, 0);
+
+    // High-pitched 1000 Hz alarm
+    uint hz = 1000;
+    uint wrap = 1000000 / hz;
+    pwm_set_wrap(buzzerSlice, wrap);
 
     for (int i = 0; i < 3; i++) {
-        gpio_put(ledPin, 1);
-        gpio_put(buzzerPin, 1);
+        pwm_set_gpio_level(buzzerPin, wrap / 2); 
+        gpio_put(redLedPin, 1);
         sleep_ms(150);
-
-        gpio_put(ledPin, 0);
-        gpio_put(buzzerPin, 0);
+        
+        pwm_set_gpio_level(buzzerPin, 0); 
+        gpio_put(redLedPin, 0);
         sleep_ms(150);
     }
 
@@ -26,8 +40,17 @@ void HardwareIO::triggerDTC() {
 }
 
 void HardwareIO::normalOperation() {
-    // Keep hardware off, wait before next physics tick
-    gpio_put(ledPin, 0);
-    gpio_put(buzzerPin, 0);
+    // Healthy Engine: Green ON, Red OFF
+    gpio_put(greenLedPin, 1);
+    gpio_put(redLedPin, 0);
+    
+    // Low-frequency 50 Hz to simulate an idling engine block
+    uint hz = 50; 
+    uint wrap = 1000000 / hz;
+    pwm_set_wrap(buzzerSlice, wrap);
+    
+    // Drive the buzzer to create the mechanical vibration
+    pwm_set_gpio_level(buzzerPin, wrap / 2); 
+    
     sleep_ms(250);
 }

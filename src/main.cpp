@@ -4,7 +4,7 @@
 #include "HardwareIO.h"
 
 int main() {
-    HardwareIO ecuHardware(6, 2);
+    HardwareIO ecuHardware(6, 10, 2);
     ecuHardware.init();
 
     ThermalSim engineSim;
